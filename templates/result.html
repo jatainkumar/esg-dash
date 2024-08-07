@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% if backorder %}
+    <h3>Backorder is needed.</h3>
+    <h4>Optimal Path:</h4>
+    <ul>
+        {% for step in path %}
+            <li>{{ step }}</li>
+        {% endfor %}
+    </ul>
+    <h4>Summary:</h4>
+    <p>{{ summary }}</p>
+{% else %}
+    <h3>No backorder is needed.</h3>
+{% endif %}
+{% endblock %}
