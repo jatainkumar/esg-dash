@@ -3,6 +3,7 @@
 {% block content %}
 <form method="POST" action="{{ url_for('predict') }}">
     {{ form.hidden_tag() }}
+
     <div>
         {{ form.national_inv.label }}<br>
         {{ form.national_inv(size=32) }}
@@ -12,8 +13,80 @@
         {{ form.lead_time(size=32) }}
     </div>
     <div>
+        {{ form.in_transit_qty.label }}<br>
+        {{ form.in_transit_qty(size=32) }}
+    </div>
+    <div>
         {{ form.forecast_3_month.label }}<br>
         {{ form.forecast_3_month(size=32) }}
+    </div>
+    <div>
+        {{ form.forecast_6_month.label }}<br>
+        {{ form.forecast_6_month(size=32) }}
+    </div>
+    <div>
+        {{ form.forecast_9_month.label }}<br>
+        {{ form.forecast_9_month(size=32) }}
+    </div>
+    <div>
+        {{ form.sales_1_month.label }}<br>
+        {{ form.sales_1_month(size=32) }}
+    </div>
+    <div>
+        {{ form.sales_3_month.label }}<br>
+        {{ form.sales_3_month(size=32) }}
+    </div>
+    <div>
+        {{ form.sales_6_month.label }}<br>
+        {{ form.sales_6_month(size=32) }}
+    </div>
+    <div>
+        {{ form.sales_9_month.label }}<br>
+        {{ form.sales_9_month(size=32) }}
+    </div>
+    <div>
+        {{ form.min_bank.label }}<br>
+        {{ form.min_bank(size=32) }}
+    </div>
+    <div>
+        {{ form.potential_issue.label }}<br>
+        {{ form.potential_issue() }}
+    </div>
+    <div>
+        {{ form.pieces_past_due.label }}<br>
+        {{ form.pieces_past_due(size=32) }}
+    </div>
+    <div>
+        {{ form.perf_6_month_avg.label }}<br>
+        {{ form.perf_6_month_avg(size=32) }}
+    </div>
+    <div>
+        {{ form.perf_12_month_avg.label }}<br>
+        {{ form.perf_12_month_avg(size=32) }}
+    </div>
+    <div>
+        {{ form.local_bo_qty.label }}<br>
+        {{ form.local_bo_qty(size=32) }}
+    </div>
+    <div>
+        {{ form.deck_risk.label }}<br>
+        {{ form.deck_risk() }}
+    </div>
+    <div>
+        {{ form.oe_constraint.label }}<br>
+        {{ form.oe_constraint() }}
+    </div>
+    <div>
+        {{ form.ppap_risk.label }}<br>
+        {{ form.ppap_risk() }}
+    </div>
+    <div>
+        {{ form.stop_auto_buy.label }}<br>
+        {{ form.stop_auto_buy() }}
+    </div>
+    <div>
+        {{ form.rev_stop.label }}<br>
+        {{ form.rev_stop() }}
     </div>
     <div>
         {{ form.num_trucks.label }}<br>
