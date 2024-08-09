@@ -13,12 +13,16 @@
         {{ form.lead_time(size=32) }}
     </div>
     <div>
-        {{ form.in_transit_qty.label }}<br>
-        {{ form.in_transit_qty(size=32) }}
-    </div>
-    <div>
         {{ form.forecast_3_month.label }}<br>
         {{ form.forecast_3_month(size=32) }}
+    </div>
+    <div>
+        {{ form.num_trucks.label }}<br>
+        {{ form.num_trucks(size=32) }}
+    </div>
+    <div>
+        {{ form.in_transit_qty.label }}<br>
+        {{ form.in_transit_qty(size=32) }}
     </div>
     <div>
         {{ form.forecast_6_month.label }}<br>
@@ -88,12 +92,16 @@
         {{ form.rev_stop.label }}<br>
         {{ form.rev_stop() }}
     </div>
-    <div>
-        {{ form.num_trucks.label }}<br>
-        {{ form.num_trucks(size=32) }}
-    </div>
-    <div>
+    <div class="center-container">
         {{ form.submit() }}
+    </div>
+    <br>
+    <div class="center-container">
+        {{ output }}
+    </div>
+    <br>
+    <div class="center-container">
+        <p>Redirect to Homepage? <a href="{{ url_for('home') }}">Home</a></p>
     </div>
 </form>
 {% endblock %}

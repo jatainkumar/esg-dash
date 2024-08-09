@@ -40,6 +40,8 @@ model1 = Net(input_dim, 2)
 model1.load_state_dict(torch.load('model.pth'))
 model1.eval()
 
+
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -52,25 +54,25 @@ def predict():
         input_data = {
             'national_inv': form.national_inv.data,
             'lead_time': form.lead_time.data,
-            'in_transit_qty': form.in_transit_qty.data,
+            'in_transit_qty': form.in_transit_qty.data if form.in_transit_qty.data else 44.05202209,
             'forecast_3_month': form.forecast_3_month.data,
-            'forecast_6_month': form.forecast_6_month.data if form.forecast_6_month.data else 0,
-            'forecast_9_month': form.forecast_9_month.data if form.forecast_9_month.data else 0,
-            'sales_1_month': form.sales_1_month.data if form.sales_1_month.data else 0,
-            'sales_3_month': form.sales_3_month.data if form.sales_3_month.data else 0,
-            'sales_6_month': form.sales_6_month.data if form.sales_6_month.data else 0,
-            'sales_9_month': form.sales_9_month.data if form.sales_9_month.data else 0,
-            'min_bank': form.min_bank.data if form.min_bank.data else 0,
-            'potential_issue': int(form.potential_issue.data) if form.potential_issue.data else 0,
-            'pieces_past_due': form.pieces_past_due.data if form.pieces_past_due.data else 0,
-            'perf_6_month_avg': form.perf_6_month_avg.data if form.perf_6_month_avg.data else 0,
-            'perf_12_month_avg': form.perf_12_month_avg.data if form.perf_12_month_avg.data else 0,
-            'local_bo_qty': form.local_bo_qty.data if form.local_bo_qty.data else 0,
-            'deck_risk': int(form.deck_risk.data) if form.deck_risk.data else 0,
-            'oe_constraint': int(form.oe_constraint.data) if form.oe_constraint.data else 0,
-            'ppap_risk': int(form.ppap_risk.data) if form.ppap_risk.data else 0,
-            'stop_auto_buy': int(form.stop_auto_buy.data) if form.stop_auto_buy.data else 0,
-            'rev_stop': int(form.rev_stop.data) if form.rev_stop.data else 0,
+            'forecast_6_month': form.forecast_6_month.data if form.forecast_6_month.data else 344.986663585842,
+            'forecast_9_month': form.forecast_9_month.data if form.forecast_9_month.data else 506.364430699228,
+            'sales_1_month': form.sales_1_month.data if form.sales_1_month.data else 55.9260685127913,
+            'sales_3_month': form.sales_3_month.data if form.sales_3_month.data else 175.025930468166,
+            'sales_6_month': form.sales_6_month.data if form.sales_6_month.data else 341.728839477207,
+            'sales_9_month': form.sales_9_month.data if form.sales_9_month.data else 525.269700686075,
+            'min_bank': form.min_bank.data if form.min_bank.data else 52.7723033900916,
+            'potential_issue': int(form.potential_issue.data) if form.potential_issue.data else 0.00053736652485,
+            'pieces_past_due': form.pieces_past_due.data if form.pieces_past_due.data else 2.04372400554548,
+            'perf_6_month_avg': form.perf_6_month_avg.data if form.perf_6_month_avg.data else -6.8720588378183,
+            'perf_12_month_avg': form.perf_12_month_avg.data if form.perf_12_month_avg.data else -6.43794674321329,
+            'local_bo_qty': form.local_bo_qty.data if form.local_bo_qty.data else 0.626450653490218,
+            'deck_risk': int(form.deck_risk.data) if form.deck_risk.data else 0.229570444485653,
+            'oe_constraint': int(form.oe_constraint.data) if form.oe_constraint.data else 0.0001451541329528,
+            'ppap_risk': int(form.ppap_risk.data) if form.ppap_risk.data else 0.120764683821712,
+            'stop_auto_buy': int(form.stop_auto_buy.data) if form.stop_auto_buy.data else 0.963808038695129,
+            'rev_stop': int(form.rev_stop.data) if form.rev_stop.data else 0.0004330925354635,
             
         }
 

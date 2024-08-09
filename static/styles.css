@@ -1,29 +1,129 @@
+/* styles.css */
+
+/* General styles */
+
 body {
     font-family: Arial, sans-serif;
+    background-image: url("image/bg.jpeg");
+    background-color: #1a1a1a;
+    color: #ccc;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h3 {
+    text-align: center;
+    color: #fff;
 }
 
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
 }
 
+/* Center container */
 .center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     margin-top: 50px;
 }
 
+/* Form styles */
+form {
+    background: #333;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+form div {
+    margin-bottom: 10px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #bbb;
+}
+
+form input, form select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: #444;
+    color: #fff;
+}
+
+form input[type="submit"] {
+    width: auto;
+    background: #5cb85c;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 4px;
+}
+
+form input[type="submit"]:hover {
+    background: #4cae4c;
+}
+
+/* Message styles */
+.message {
+    background: #444;
+    color: #5cb85c;
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Link styles */
+a {
+    color: #5cb85c;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Error message styles */
+.error {
+    color: #a94442;
+    background: #d9534f;
+    padding: 10px;
+    border: 1px solid #d43f3a;
+    border-radius: 4px;
+}
+
+/* Button styles */
 .button {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px 15px;
     font-size: 16px;
-    background-color: #007BFF;
-    color: #fff;
+    cursor: pointer;
+    text-align: center;
     text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #5cb85c;
+    border: none;
     border-radius: 5px;
+    margin-top: 10px;
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: #4cae4c;
+}
+
+.button:active {
+    background-color: #45a049;
 }
