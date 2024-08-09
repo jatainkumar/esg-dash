@@ -5,4 +5,5 @@ numpy
 joblib
 matplotlib
 seaborn
+gunicorn
 
