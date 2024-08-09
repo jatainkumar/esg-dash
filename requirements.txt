@@ -6,4 +6,4 @@ joblib
 matplotlib
 seaborn
 gunicorn
-
+torch
