@@ -51,7 +51,7 @@ class InputForm(FlaskForm):
         label="Minimum Bank (Optional)",
         validators=[Optional()]
     )
-    potential_issue = IntegerField(
+    potential_issue = BooleanField(
         label="Potential issue (Optional)",
         validators=[Optional()]
     )
@@ -71,23 +71,23 @@ class InputForm(FlaskForm):
         label="Local Backorder Quantity (Optional)",
         validators=[Optional()]
     )
-    deck_risk = IntegerField(
+    deck_risk = BooleanField(
         label="Deck Risk (Optional)",
         validators=[Optional()]
     )
-    oe_constraint = IntegerField(
+    oe_constraint = BooleanField(
         label="OE Constraint (Optional)",
         validators=[Optional()]
     )
-    ppap_risk = IntegerField(
+    ppap_risk = BooleanField(
         label="PPAP Risk (Optional)",
         validators=[Optional()]
     )
-    stop_auto_buy = IntegerField(
+    stop_auto_buy = BooleanField(
         label="Stop Auto Buy (Optional)",
         validators=[Optional()]
     )
-    rev_stop = IntegerField(
+    rev_stop = BooleanField(
         label="Rev Stop (Optional)",
         validators=[Optional()]
     )

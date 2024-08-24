@@ -1,20 +1,24 @@
-#import networkx as nx
-#import geopandas as gpd
-#import folium
+import networkx as nx
+import geopandas as gpd
+import folium
 import numpy as np 
 import pandas as pd
 import matplotlib.pyplot as plt
-#import itertools
-#import time
-#import random
-#from IPython.display import display
-#from docplex.mp.model import Model
-#import geodatasets
-#import joblib
+import itertools
+import time
+import random
+from IPython.display import display
+from docplex.mp.model import Model
+import geodatasets
+from geodatasets import get_path
+
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-#import matplotlib.pyplot as plt
+
+
+
 from flask import Flask, url_for, render_template, request
 from forms import InputForm
 
@@ -35,7 +39,7 @@ class Net(nn.Module):
         x = self.fc3(x)
         return self.softmax(x)
     
-input_dim = 21  # Adjusted to 20 features
+input_dim = 21 
 model1 = Net(input_dim, 2)
 model1.load_state_dict(torch.load('model.pth'))
 model1.eval()

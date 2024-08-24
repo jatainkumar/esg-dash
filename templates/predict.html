@@ -53,10 +53,6 @@
         {{ form.min_bank(size=32) }}
     </div>
     <div>
-        {{ form.potential_issue.label }}<br>
-        {{ form.potential_issue() }}
-    </div>
-    <div>
         {{ form.pieces_past_due.label }}<br>
         {{ form.pieces_past_due(size=32) }}
     </div>
@@ -72,25 +68,41 @@
         {{ form.local_bo_qty.label }}<br>
         {{ form.local_bo_qty(size=32) }}
     </div>
-    <div>
+    <div style="display: flex; align-items: center;">
+        {{ form.potential_issue.label }}<br>
+        <label style="margin-left: 5px;">
+        {{ form.potential_issue(checked=form.potential_issue.data) }}
+        </label>
+    </div>
+    <div style="display: flex; align-items: center;">
         {{ form.deck_risk.label }}<br>
+        <label style="margin-left: 5px;">
         {{ form.deck_risk() }}
+        </label>
     </div>
-    <div>
+    <div style="display: flex; align-items: center;">
         {{ form.oe_constraint.label }}<br>
+        <label style="margin-left: 5px;">
         {{ form.oe_constraint() }}
+        </label>
     </div>
-    <div>
+    <div style="display: flex; align-items: center;">
         {{ form.ppap_risk.label }}<br>
+        <label style="margin-left: 5px;">
         {{ form.ppap_risk() }}
+        </label>
     </div>
-    <div>
+    <div style="display: flex; align-items: center;">
         {{ form.stop_auto_buy.label }}<br>
+        <label style="margin-left: 5px;">
         {{ form.stop_auto_buy() }}
+        </label>
     </div>
-    <div>
+    <div style="display: flex; align-items: center;">
         {{ form.rev_stop.label }}<br>
+        <label style="margin-left: 5px;">
         {{ form.rev_stop() }}
+        </label>
     </div>
     <div class="center-container">
         {{ form.submit() }}

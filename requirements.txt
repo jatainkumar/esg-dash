@@ -7,3 +7,6 @@ matplotlib
 seaborn
 gunicorn
 torch
+networkx
+geopandas
+folium
