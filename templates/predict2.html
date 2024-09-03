@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('predict2') }}">
+    {{ form.hidden_tag() }}
+
+    <div>
+        {{ form.num_trucks.label }}<br>
+        {{ form.num_trucks(size=32) }}
+    </div>
+
+    <div class="center-container">
+        {{ form.submit() }}
+    </div>
+</form>
+{% endblock %}

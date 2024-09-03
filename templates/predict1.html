@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<form method="POST" action="{{ url_for('predict') }}">
+<form method="POST" action="{{ url_for('predict1') }}">
     {{ form.hidden_tag() }}
 
     <div>
@@ -15,10 +15,6 @@
     <div>
         {{ form.forecast_3_month.label }}<br>
         {{ form.forecast_3_month(size=32) }}
-    </div>
-    <div>
-        {{ form.num_trucks.label }}<br>
-        {{ form.num_trucks(size=32) }}
     </div>
     <div>
         {{ form.in_transit_qty.label }}<br>

@@ -5,10 +5,13 @@ from wtforms import (
     SubmitField
 )
 from wtforms.validators import DataRequired, Optional
+from wtforms import SelectField
 
-class InputForm(FlaskForm):
-    national_inv = IntegerField(
+class InputForm1(FlaskForm):
+    national_inv = SelectField(
         label="National Inventory *",
+        choices=[(str(i), str(i)) for i in range(0, 101)],
+        coerce=int,
         validators=[DataRequired()]
     )
     lead_time = IntegerField(
@@ -91,8 +94,12 @@ class InputForm(FlaskForm):
         label="Rev Stop (Optional)",
         validators=[Optional()]
     )
+    submit = SubmitField("Predict")
+
+
+class InputForm2(FlaskForm):
     num_trucks = IntegerField(
         label="Number of Trucks *",
         validators=[DataRequired()]
     )
-    submit = SubmitField("Predict")
+    submit = SubmitField("View Summary")

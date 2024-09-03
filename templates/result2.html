@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2>Cost Functions</h2>
+    <ul>
+        {% for cost_function in cost_functions %}
+            <li>{{ cost_function }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Summary of Cost Functions</h2>
+    <p>{{ summary }}</p>
+
+    <h2>Optimized Path</h2>
+    <div id="map">
+        {{ map_html|safe }}
+    </div>
+
+    <h2>Optimized Route</h2>
+    <ul>
+        {% for path in optimized_path %}
+            <li>{{ path }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

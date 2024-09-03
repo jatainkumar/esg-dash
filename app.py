@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import itertools
 import time
 import random
+
+from qiskit_optimization import QuadraticProgram
+from qiskit_optimization.translators import from_docplex_mp
+from qiskit_optimization.algorithms import CplexOptimizer
 from IPython.display import display
 from docplex.mp.model import Model
 import geodatasets
@@ -20,7 +24,7 @@ import torch.nn.functional as F
 
 
 from flask import Flask, url_for, render_template, request
-from forms import InputForm
+from forms import InputForm1, InputForm2
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret_key"
@@ -51,9 +55,9 @@ model1.eval()
 def home():
     return render_template("home.html", title="Home")
 
-@app.route("/predict", methods=["GET", "POST"])
-def predict():
-    form = InputForm()
+@app.route("/predict1", methods=["GET", "POST"])
+def predict1():
+    form = InputForm1()
     if form.validate_on_submit():
         input_data = {
             'national_inv': form.national_inv.data,
@@ -80,7 +84,6 @@ def predict():
             
         }
 
-        # Convert input data to DataFrame
         input_df = pd.DataFrame([input_data])
         input_tensor = torch.tensor(input_df.values, dtype=torch.float32)
         
@@ -88,20 +91,112 @@ def predict():
             output = model1(input_tensor)
         pytorch_pred = output.argmax(dim=1).item()
 
-        if pytorch_pred == 1:
-            num_trucks = form.num_trucks.data
-            optimal_path, summary = calculate_optimal_path(num_trucks)
-            return render_template("result.html", title="Result", backorder=True, path=optimal_path, summary=summary)
+        if pytorch_pred == 0:
+            return render_template("predict2.html", title="Predict2", form=InputForm2())
         else:
             return render_template("result.html", title="Result", backorder=False)
-    return render_template("predict.html", title="Predict", form=form)
+    return render_template("predict1.html", title="Predict1", form=form)
 
-def calculate_optimal_path(num_trucks):
-    # Mock data for companies
-    optimal_path = num_trucks
-    summary = "Optimal path calculated using given constraints."
+@app.route("/predict2", methods=["GET", "POST"])
+def predict2():
+    form = InputForm2()
+    num_trucks = int(request.form['num_trucks'])
+    
+    # Code from the notebook for generating map and optimization results
+    path_to_file = get_path('nybb')
+    df = gpd.read_file(path_to_file)
+    m = folium.Map(location=[40.70, -73.94], zoom_start=10, max_zoom=12, tiles='CartoDB positron')
+    
+    df = df.to_crs(epsg=2263)
+    df['centroid'] = df.centroid
+    df = df.to_crs(epsg=4326)
+    df['centroid'] = df['centroid'].to_crs(epsg=4326)
 
-    return optimal_path, summary
+    np.random.seed(7)
+    locations = []
+    ids = 0
+    for _, r in df.iterrows():
+        lat, lon = r['centroid'].y, r['centroid'].x
+        for i in range(2):
+            lat_rand, lon_rand = lat + 0.2 * np.random.rand(), lon +0.1 * np.random.rand()
+            locations.append((lon_rand, lat_rand))
+            folium.Marker(location=[lat_rand, lon_rand], popup=f'Id: {ids}').add_to(m)
+            ids += 1
+    center = np.array(locations).mean(axis=0)
+    locations = [(center[0], center[1])] + locations
+    folium.CircleMarker(location=[center[1], center[0]], radius=10, popup="<strong>Warehouse</strong>",
+                        color="red", fill=True, fillOpacity=1, fillColor="tab:red").add_to(m)
+    
+    companies = np.array(locations)
+    companies -= companies[0]
+    companies /= (np.max(np.abs(companies), axis=0))
+    r = list(np.sqrt(np.sum(companies ** 2, axis=1)))
+
+    threshold = 1
+    n_companies = len(companies)
+    G = nx.Graph(name="VRP")
+    G.add_nodes_from(range(n_companies))
+
+    for i in range(n_companies):
+        for j in range(n_companies):
+            if i != j:
+                rij = np.sqrt(np.sum((companies[i] - companies[j])**2))
+                if (rij < threshold) or (0 in [i, j]):
+                    G.add_weighted_edges_from([[i, j, rij]])
+                    r.append(rij)
+    
+    mdl = Model(name="VRP")
+    x = {}
+    for i, j in G.edges():
+        x[(i, j)] = mdl.binary_var(name=f"x_{i}_{j}")
+        x[(j, i)] = mdl.binary_var(name=f"x_{j}_{i}")
+
+    cost_func = mdl.sum(w["weight"] * x[(i, j)] for i, j, w in G.edges(data=True)) + \
+                mdl.sum(w["weight"] * x[(j, i)] for i, j, w in G.edges(data=True))
+    mdl.minimize(cost_func)
+
+    # Constraints as described
+    for i in range(1, n_companies):
+        mdl.add_constraint(mdl.sum(x[i, j] for j in range(n_companies) if (i, j) in x.keys()) == 1)
+    for j in range(1, n_companies):
+        mdl.add_constraint(mdl.sum(x[i, j] for i in range(n_companies) if (i, j) in x.keys()) == 1)
+    mdl.add_constraint(mdl.sum(x[i, 0] for i in range(1, n_companies)) == num_trucks)
+    mdl.add_constraint(mdl.sum(x[0, j] for j in range(1, n_companies)) == num_trucks)
+
+    companies_list = list(range(1, n_companies))
+    subroute_set = []
+    for i in range(2, len(companies_list) + 1):
+        for comb in itertools.combinations(companies_list, i):
+            subroute_set.append(list(comb))
+    
+    for subroute in subroute_set:
+        constraint_3 = []
+        for i, j in itertools.permutations(subroute, 2):
+            if (i, j) in x.keys():
+                constraint_3.append(x[(i,j)])
+            elif i == j:
+                pass
+            else:
+                constraint_3 = []
+                break
+        if len(constraint_3) != 0:
+            mdl.add_constraint(mdl.sum(constraint_3) <= len(subroute) - 1)
+
+    quadratic_program = from_docplex_mp(mdl)
+    sol = CplexOptimizer().solve(quadratic_program)
+    solution_cplex = sol.raw_results.as_name_dict()
+    G_sol = nx.Graph()
+    G_sol.add_nodes_from(range(n_companies))
+    for i in solution_cplex:
+        nodes = i[2:].split("_")
+        G_sol.add_edge(int(nodes[0]), int(nodes[1]))
+
+    # Prepare data to pass to the template
+    cost_functions = [f"x_{i}_{j}: {v}" for (i, j), v in x.items()]
+    cost_summary = f"The number of qubits needed to solve the problem is: {mdl.number_of_binary_variables}"
+    map_html = m._repr_html_()
+
+    return render_template('result2.html', cost_functions=cost_functions, cost_summary=cost_summary, map_html=map_html)
 
 if __name__ == "__main__":
     app.run(debug=True)
