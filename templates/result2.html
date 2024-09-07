@@ -1,25 +1,46 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h2>Cost Functions</h2>
-    <ul>
-        {% for cost_function in cost_functions %}
-            <li>{{ cost_function }}</li>
-        {% endfor %}
-    </ul>
 
-    <h2>Summary of Cost Functions</h2>
-    <p>{{ summary }}</p>
+    <h1>Backorder and Transport Optimizer</h1>
 
-    <h2>Optimized Path</h2>
-    <div id="map">
-        {{ map_html|safe }}
+    <div class="map">
+        <h2>Map</h2>
+        <div id="map1">
+            {{ map_html|safe }}
+        </div>
     </div>
 
-    <h2>Optimized Route</h2>
-    <ul>
-        {% for path in optimized_path %}
-            <li>{{ path }}</li>
-        {% endfor %}
-    </ul>
+    <div class="graphs">
+        <div class="column">
+            <h2>UN-Optimized Route</h2>
+        
+                <img src="data:image/png;base64,{{ graph1 }}" alt="UN-Optimized Path and Route">
+            
+        </div>
+        <div class="column">
+            <h2>Optimized Route</h2>
+        
+                <img src="data:image/png;base64,{{ graph2 }}" alt="Optimized Path and Route">
+            
+        </div>
+    </div>
+
+    <hr style="margin: 20px 0;"/>
+
+    <div style="display: flex; justify-content: space-between;">
+        <div style="width: 48%;">
+            <h2>Cost Functions</h2>
+            <ul>
+                    <pre>{{ cost_functions }}</pre>
+            </ul>
+        </div>
+        
+        <div style="width: 48%;">
+            <h2>Summary of Cost Functions</h2>
+            <p>{{ summary }}</p>
+        </div>
+    </div>
+
 {% endblock %}
+

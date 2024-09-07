@@ -5,6 +5,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
+import io
+import base64
+from flask import render_template
 import time
 import random
 
@@ -102,16 +105,14 @@ def predict2():
     form = InputForm2()
     num_trucks = int(request.form['num_trucks'])
     
-    # Code from the notebook for generating map and optimization results
+    #LOCATIONS ON MAP
     path_to_file = get_path('nybb')
     df = gpd.read_file(path_to_file)
     m = folium.Map(location=[40.70, -73.94], zoom_start=10, max_zoom=12, tiles='CartoDB positron')
-    
     df = df.to_crs(epsg=2263)
     df['centroid'] = df.centroid
     df = df.to_crs(epsg=4326)
     df['centroid'] = df['centroid'].to_crs(epsg=4326)
-
     np.random.seed(7)
     locations = []
     ids = 0
@@ -126,43 +127,66 @@ def predict2():
     locations = [(center[0], center[1])] + locations
     folium.CircleMarker(location=[center[1], center[0]], radius=10, popup="<strong>Warehouse</strong>",
                         color="red", fill=True, fillOpacity=1, fillColor="tab:red").add_to(m)
-    
+    map_html = m._repr_html_()
+
+    #NUMBERS OF EDGES
     companies = np.array(locations)
     companies -= companies[0]
     companies /= (np.max(np.abs(companies), axis=0))
     r = list(np.sqrt(np.sum(companies ** 2, axis=1)))
-
     threshold = 1
     n_companies = len(companies)
     G = nx.Graph(name="VRP")
     G.add_nodes_from(range(n_companies))
-
+    np.random.seed(2)
+    count = 0
     for i in range(n_companies):
         for j in range(n_companies):
             if i != j:
                 rij = np.sqrt(np.sum((companies[i] - companies[j])**2))
                 if (rij < threshold) or (0 in [i, j]):
+                    count +=1
                     G.add_weighted_edges_from([[i, j, rij]])
                     r.append(rij)
-    
+    colors = [plt.cm.get_cmap("coolwarm")(x) for x in r[1:]]
+    nx.draw(G, pos=companies, with_labels=True, node_size=500,
+            edge_color=colors, width=1, font_color="white",font_size=14,
+            node_color = ["tab:red"] + (n_companies-1)*["darkblue"])
+    edges=len(G.edges)   
+
+    #GRAPH1
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    graph1 = base64.b64encode(img.getvalue()).decode('utf8')
+
+    #SOLVE THE PROBLEM
     mdl = Model(name="VRP")
+    n_trucks= num_trucks
     x = {}
     for i, j in G.edges():
         x[(i, j)] = mdl.binary_var(name=f"x_{i}_{j}")
         x[(j, i)] = mdl.binary_var(name=f"x_{j}_{i}")
 
+    print(f"The number of qubits needed to solve the problem is: {mdl.number_of_binary_variables}")
     cost_func = mdl.sum(w["weight"] * x[(i, j)] for i, j, w in G.edges(data=True)) + \
                 mdl.sum(w["weight"] * x[(j, i)] for i, j, w in G.edges(data=True))
     mdl.minimize(cost_func)
 
-    # Constraints as described
+    # Constraint 1a(yellow Fig. above): Only one truck goes out from company i 
     for i in range(1, n_companies):
         mdl.add_constraint(mdl.sum(x[i, j] for j in range(n_companies) if (i, j) in x.keys()) == 1)
+    
+    # Constraint 1b (yellow Fig. above): Only one truck comes into company j 
     for j in range(1, n_companies):
         mdl.add_constraint(mdl.sum(x[i, j] for i in range(n_companies) if (i, j) in x.keys()) == 1)
+    
+    # Constraint 2: (orange Fig. above) For the warehouse
     mdl.add_constraint(mdl.sum(x[i, 0] for i in range(1, n_companies)) == num_trucks)
     mdl.add_constraint(mdl.sum(x[0, j] for j in range(1, n_companies)) == num_trucks)
 
+    # Constraint 3: (blue Fig. above) To eliminate sub-routes
     companies_list = list(range(1, n_companies))
     subroute_set = []
     for i in range(2, len(companies_list) + 1):
@@ -183,6 +207,10 @@ def predict2():
             mdl.add_constraint(mdl.sum(constraint_3) <= len(subroute) - 1)
 
     quadratic_program = from_docplex_mp(mdl)
+    cost_functions=quadratic_program.export_as_lp_string()
+
+
+    #GRAPH2
     sol = CplexOptimizer().solve(quadratic_program)
     solution_cplex = sol.raw_results.as_name_dict()
     G_sol = nx.Graph()
@@ -190,13 +218,32 @@ def predict2():
     for i in solution_cplex:
         nodes = i[2:].split("_")
         G_sol.add_edge(int(nodes[0]), int(nodes[1]))
+    nx.draw(G_sol, pos=companies, with_labels=True, node_size=500,
+            edge_color=colors, width=1, font_color="white",font_size=14,
+            node_color = ["tab:red"] + (n_companies-1)*["darkblue"])
+    img2 = io.BytesIO()
+    plt.savefig(img2, format='png')
+    plt.close()
+    img2.seek(0)
+    graph2 = base64.b64encode(img2.getvalue()).decode('utf8')
+
+
+
+
+    #sol = CplexOptimizer().solve(quadratic_program)
+    # solution_cplex = sol.raw_results.as_name_dict()
+    # G_sol = nx.Graph()
+    # G_sol.add_nodes_from(range(n_companies))
+    # for i in solution_cplex:
+    #     nodes = i[2:].split("_")
+    #     G_sol.add_edge(int(nodes[0]), int(nodes[1]))
 
     # Prepare data to pass to the template
-    cost_functions = [f"x_{i}_{j}: {v}" for (i, j), v in x.items()]
+    #cost_functions = [f"x_{i}_{j}: {v}" for (i, j), v in x.items()]
     cost_summary = f"The number of qubits needed to solve the problem is: {mdl.number_of_binary_variables}"
-    map_html = m._repr_html_()
+    
 
-    return render_template('result2.html', cost_functions=cost_functions, cost_summary=cost_summary, map_html=map_html)
+    return render_template('result2.html', cost_functions=cost_functions, cost_summary=cost_summary, map_html=map_html, graph1=graph1, graph2=graph2, edges=edges)
 
 if __name__ == "__main__":
     app.run(debug=True)

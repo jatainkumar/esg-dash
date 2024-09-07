@@ -1,10 +1,8 @@
 /* styles.css */
 
-/* General styles */
-
 body {
     font-family: Arial, sans-serif;
-    background-image: url("image/bg.jpeg");
+    background-image: url(image/image.jpeg);
     background-color: #1a1a1a;
     color: #ccc;
     margin: 0;
@@ -126,4 +124,34 @@ a:hover {
 
 .button:active {
     background-color: #45a049;
+}
+
+.graph1.img {
+    width: 400px;
+    background-color: white;
+}
+
+.graphs {
+    display: flex;
+    justify-content: space-between;
+}
+
+.column {
+    width: 48%; 
+    box-sizing: border-box; 
+}
+
+.column img {
+    width: 100%;
+    height: auto;
+    display: block; 
+}
+
+.map {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#map1 {
+    height: 1%;
 }

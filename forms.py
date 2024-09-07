@@ -4,27 +4,25 @@ from wtforms import (
     BooleanField,
     SubmitField
 )
-from wtforms.validators import DataRequired, Optional
+from wtforms.validators import DataRequired, Optional, NumberRange
 from wtforms import SelectField
 
 class InputForm1(FlaskForm):
-    national_inv = SelectField(
+    national_inv = IntegerField(
         label="National Inventory *",
-        choices=[(str(i), str(i)) for i in range(0, 101)],
-        coerce=int,
-        validators=[DataRequired()]
+        validators=[DataRequired(), NumberRange(min=0)]
     )
     lead_time = IntegerField(
         label="Lead Time *",
-        validators=[DataRequired()]
+        validators=[DataRequired(), NumberRange(min=0)]
     )
     in_transit_qty = IntegerField(
         label="In Transit Qty (Optional)",
-        validators=[Optional()]
+        validators=[Optional(), NumberRange(min=0)]
     )
     forecast_3_month = IntegerField(
         label="Forecast 3 Month *",
-        validators=[DataRequired()]
+        validators=[DataRequired(), NumberRange(min=0)]
     )
     forecast_6_month = IntegerField(
         label="Forecast 6 month (Optional)",
